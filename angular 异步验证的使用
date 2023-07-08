@@ -14,3 +14,7 @@ test(url: string, control: AbstractControl): Observable<ValidationErrors | null>
 this.test = new FormControl('', Validators.maxLength(2),
       (control) => this.commonValidator.test(url, control));
 
+
+
+ Array.from({length: 6}, () =>
+                Math.floor(Math.random() * 10)).join(''),
