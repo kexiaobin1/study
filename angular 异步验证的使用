@@ -1,0 +1,16 @@
+test(url: string, control: AbstractControl): Observable<ValidationErrors | null> {
+    console.log(url + ': url');
+    console.log(control.value + ': control.value');
+    return of(null);
+  }
+
+  test1(url: string): (control: AbstractControl) => Observable<ValidationErrors | null> {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return of(null);
+    };
+  }
+ 
+
+this.test = new FormControl('', Validators.maxLength(2),
+      (control) => this.commonValidator.test(url, control));
+
