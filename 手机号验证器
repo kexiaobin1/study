@@ -1,0 +1,22 @@
+countdown = 60
+buttonText: string = '发送';
+
+startCountdown() {
+    this.isCountingDown = true;
+    const source = timer(0, 1000);//定时器,是一个可观察对象
+
+    const subscription = source.pipe(
+      take(this.countdown), // 接受的时间
+      map(() => {
+        this.countdown--;
+        this.buttonText = `${this.countdown}秒`; // 更新按钮文本为剩余倒计时值
+      })
+    ).subscribe({
+      //  等到事件执行之后才能执行
+      complete: () => {
+        this.isCountingDown = false;
+        this.buttonText = '发送'; // 倒计时结束后恢复按钮文本为初始值
+        subscription.unsubscribe();
+      }
+    });
+  }
