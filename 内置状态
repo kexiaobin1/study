@@ -1,0 +1,64 @@
+import {Pipe, PipeTransform} from '@angular/core';
+import {APPLICATION_STATUS, ApplicationStatus} from "../../entity/enum/application-status";
+import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {StatusEnum} from "../../entity/enum/statusEnum";
+
+@Pipe({
+  name: 'applicationState'
+})
+export class ApplicationPipe implements PipeTransform {
+  sanitizer: DomSanitizer;
+  private htmlSnippet: string;
+
+  constructor(domSanitizer: DomSanitizer) {
+    this.sanitizer = domSanitizer;
+  }
+
+  transform(value: ApplicationStatus): SafeHtml {
+    // SafeHtml 是 Angular 框架中的一个类型，用于表示被认为是安全的 HTML 内容。它是通过使用 DomSanitizer 对 HTML 进行处理后生成的。
+    let result: SafeHtml = null;
+    let description = '';
+    for (const key in APPLICATION_STATUS) {
+      if (APPLICATION_STATUS[key]) {
+        const v = APPLICATION_STATUS[key] as StatusEnum<ApplicationStatus>;
+        if (v.value === value) {
+          description = v.description;
+        // 在 Angular 应用中，通常使用 DomSanitizer 的 bypassSecurityTrustHtml 方法将 HTML 内容转换为 SafeHtml 类型。示例代码如下：
+          this.htmlSnippet = `<span class='badge badge-pill badge-${v.clazz}'>${description}</span>`;
+          result = this.sanitizer.bypassSecurityTrustHtml(this.htmlSnippet);
+        }
+      }
+    }
+    return result;
+  }
+
+}
+
+
+
+/**
+ * 第三方平台任务状态
+ */
+import {StatusEnum} from './statusEnum';
+
+export type ApplicationStatus = 0 | 1;
+
+
+/**
+ * freezing是正在进行时，指正在冻结中。
+ * 在当前项目中指：由正常变为冻结的瞬间。
+ * 比如正在加载中，我们会使用单词loading
+ * 而在这应该用过去分启frozen，表示已经被冻结的
+ */
+export const APPLICATION_STATUS: {[index: string]: StatusEnum<ApplicationStatus>} = {
+  frozen: {
+    value: 0 as ApplicationStatus,
+    description: '冻结',
+    clazz: 'secondary'
+  } as StatusEnum<ApplicationStatus>,
+  normal: {
+    value: 1 as ApplicationStatus,
+    description: '正常',
+    clazz: 'success'
+  } as StatusEnum<ApplicationStatus>,
+};
